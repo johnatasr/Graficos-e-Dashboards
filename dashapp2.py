@@ -7,25 +7,33 @@ import pandas as pd
 
 
 df = pd.read_csv('Data/gapminderDataFiveYear.csv')
-
+# print(df)
 opcao_ano = []
+life_op = []
 
 for ano in df['year'].unique():
     opcao_ano.append({'label': str(ano), 'value': ano})
+
+
+for x in df['country'].unique():
+    life_op.append({'label': str(x), 'value': x})
+
 
 app = dash.Dash()
 
 app.layout = html.Div([
 
     dcc.Graph(id='graph'),
-    dcc.Dropdown(id='year-picker', options=opcao_ano, value=df['year'].min())
+    dcc.Dropdown(id='year-picker', options=opcao_ano, value=df['year'].min()),
+    dcc.Dropdown(id='country', options=life_op, value=df['lifeExp'].min())
 ])
 
 @app.callback(Output('graph', 'figure'),
-              [Input('year-picker', 'value')])
-def update_figura(ano_selec):
+              [Input('year-picker', 'value'),
+               Input('life', 'value')])
+def update_figura(ano_selec, life_selec):
 
-    df_filtro = df[df['year']==ano_selec]
+    df_filtro = df[(df['year']==ano_selec) & (df['lifeExp']==life_selec)]
 
     traces = []
 
